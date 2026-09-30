@@ -1,0 +1,12 @@
+namespace: Example\Tests\Functional
+support_namespace: Support
+paths:
+    tests: Functional
+    output: Functional/_output
+    data: Fixtures/Functional
+    support: Functional/Support
+actor_suffix: Tester
+settings:
+    colors: true
+params:
+    - env

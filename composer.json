@@ -1,0 +1,70 @@
+{
+    "name": "sovmart/codeception-module-joomla",
+    "description": "Fixture-driven Codeception module for black-box Joomla functional tests",
+    "keywords": [
+        "codeception",
+        "functional-testing",
+        "joomla",
+        "testing"
+    ],
+    "homepage": "https://github.com/SovMart-Team/Codeception-Module-Joomla",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SovMart Team",
+            "homepage": "https://github.com/SovMart-Team"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/SovMart-Team/Codeception-Module-Joomla/issues",
+        "source": "https://github.com/SovMart-Team/Codeception-Module-Joomla"
+    },
+    "require": {
+        "php": "^8.2",
+        "ext-fileinfo": "*",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "codeception/codeception": "^5.3",
+        "codeception/module-db": "^3.2",
+        "codeception/module-phpbrowser": "^4.0",
+        "phpunit/phpunit": "^11.5 || ^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "JoomlaCodeception\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JoomlaCodeception\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml.dist"
+    },
+    "scripts-descriptions": {
+        "test": "Run the package unit test suite"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "archive": {
+        "exclude": [
+            "/.gitattributes",
+            "/.github",
+            "/.gitignore",
+            "/.idea",
+            "/.phpunit.cache",
+            "/CONTRIBUTING.md",
+            "/composer.lock",
+            "/examples/Functional/Support/AdministratorTester.php",
+            "/examples/Functional/Support/ApiTester.php",
+            "/examples/Functional/Support/_generated",
+            "/phpunit.xml.dist",
+            "/tests",
+            "/vendor"
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+/.gitattributes export-ignore
+/.github export-ignore
+/.gitignore export-ignore
+/.idea export-ignore
+/composer.lock export-ignore
+/examples/Functional/Support/AdministratorTester.php export-ignore
+/examples/Functional/Support/ApiTester.php export-ignore
+/examples/Functional/Support/_generated export-ignore
+/tests export-ignore
+/vendor export-ignore
+/phpunit.xml.dist export-ignore
+/CONTRIBUTING.md export-ignore

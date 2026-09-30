@@ -1,0 +1,25 @@
+actor: AdministratorTester
+modules:
+    enabled:
+        - PhpBrowser:
+              url: '%TEST_BASE_URL%'
+        - Db:
+              dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%'
+              user: '%DB_USER%'
+              password: '%DB_PASSWORD%'
+              cleanup: false
+              populate: false
+        - JoomlaCodeception\Module\Joomla:
+              client: administrator
+              projectRoot: '%TEST_ROOT%'
+              fixtureRoot: '%TEST_FIXTURE_ROOT%'
+              fixtureNamespace: 'Example\Tests\Fixtures\Functional'
+              component: com_example
+              componentAsset: com_example
+              databasePrefix: '%DB_PREFIX%'
+              filesystemRoots:
+                  images: '%TEST_IMAGES_ROOT%'
+                  storage: '%TEST_STORAGE_ROOT%'
+                  tmp: '%TEST_TMP_ROOT%'
+              publicImagePrefix: '/images/example'
+              mutationLockName: example-codeception-fixtures
