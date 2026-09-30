@@ -1,0 +1,76 @@
+name: Tests
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php: '8.2'
+                      dependencies: lowest
+                    - php: '8.2'
+                      dependencies: highest
+                    - php: '8.3'
+                      dependencies: highest
+                    - php: '8.4'
+                      dependencies: highest
+                    - php: '8.5'
+                      dependencies: highest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  coverage: none
+                  tools: composer:v2
+                  extensions: fileinfo, json, pdo, pdo_mysql, pdo_sqlite
+            - run: composer validate --strict
+            - name: Install lowest supported dependencies
+              if: matrix.dependencies == 'lowest'
+              run: composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction --no-progress
+            - name: Install current dependencies
+              if: matrix.dependencies == 'highest'
+              run: composer install --prefer-dist --no-interaction --no-progress
+            - run: composer test
+            - name: Lint PHP sources and examples
+              run: find src tests examples -name '*.php' -print0 | xargs -0 -n1 php -l
+            - name: Validate example Codeception configuration
+              if: matrix.php == '8.5' && matrix.dependencies == 'highest'
+              env:
+                  TEST_BASE_URL: http://joomla.test
+                  TEST_ROOT: /tmp/joomla
+                  TEST_FIXTURE_ROOT: ${{ github.workspace }}/examples/Fixtures/Functional
+                  TEST_IMAGES_ROOT: /tmp/joomla/images/example
+                  TEST_STORAGE_ROOT: /tmp/joomla/storage
+                  TEST_TMP_ROOT: /tmp/joomla/tmp
+                  DB_HOST: db
+                  DB_NAME: joomla_test
+                  DB_USER: joomla_test
+                  DB_PASSWORD: secret
+                  DB_PREFIX: jos_
+              run: |
+                  vendor/bin/codecept config:validate -c examples
+                  example_dir="$(mktemp -d)"
+                  cp -R examples/. "$example_dir"
+                  TEST_FIXTURE_ROOT="$example_dir/Fixtures/Functional" vendor/bin/codecept build -c "$example_dir"
+            - name: Build clean Composer archive
+              if: matrix.php == '8.5' && matrix.dependencies == 'highest'
+              run: |
+                  composer archive --format=tar --dir=/tmp --file=codeception-module-joomla
+                  archive=/tmp/codeception-module-joomla.tar
+                  if tar -tf "$archive" | grep -Eq '^(vendor/|tests/|composer.lock$|phpunit.xml.dist$|\.github/|\.idea/|examples/Functional/Support/(AdministratorTester\.php|ApiTester\.php|_generated/))'; then exit 1; fi
+                  for required in composer.json README.md LICENSE src/Module/Joomla.php docs/getting-started.md examples/README.md; do
+                      tar -tf "$archive" | grep -Fxq "$required"
+                  done
+                  package_dir="$(mktemp -d)"
+                  tar -xf "$archive" -C "$package_dir"
+                  composer install --working-dir="$package_dir" --no-dev --prefer-dist --no-interaction --no-progress
+                  php -r "require '$package_dir/vendor/autoload.php'; exit(class_exists('JoomlaCodeception\\Module\\Joomla') ? 0 : 1);"
